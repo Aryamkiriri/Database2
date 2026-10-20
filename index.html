@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Database Design – Exam Prep (Lectures 2 & 4)</title>
+<title>Database Design – Exam Prep (Lectures 1–4)</title>
 <style>
 :root{--bg:#f6faf9;--card:#fff;--ink:#17302d;--mut:#5b7370;--pri:#0f6b66;--pri2:#d9efec;--acc:#b8860b;--ok:#1b8a4b;--bad:#c0392b;--line:#cfe0dd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d1c;--card:#162927;--card:#172b29;--ink:#e3f1ef;--mut:#9bb5b1;--pri:#4fc3ba;--pri2:#1f3b38;--acc:#e0b84c;--ok:#4cc27f;--bad:#ff7b6b;--line:#2a4744}}
@@ -40,12 +40,12 @@ details[open] summary{border-bottom:1px solid var(--line)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body><div class="w">
 <h1>Database Design: Exam Prep</h1>
-<p class="sub">Lecture 2 (Design Objectives) + Lecture 4 (Conceptual Overview)</p>
+<p class="sub">L1 Relational Database · L2 Design Objectives · L3 Terminology · L4 Conceptual Overview</p>
 <div class="tabs" role="tablist">
 <button class="on" data-t="notes">Notes</button><button data-t="cards">Flashcards</button><button data-t="quiz">Quiz</button>
 </div>
 <div class="seg" id="lecSeg">
-<button class="on" data-l="all">Both</button><button data-l="2">Lecture 2</button><button data-l="4">Lecture 4</button>
+<button class="on" data-l="all">All</button><button data-l="1">Lecture 1</button><button data-l="2">Lecture 2</button><button data-l="3">Lecture 3</button><button data-l="4">Lecture 4</button>
 </div>
 
 <section id="notes"></section>
@@ -54,6 +54,12 @@ details[open] summary{border-bottom:1px solid var(--line)}
 </div>
 <script>
 const NOTES=[
+{l:1,t:"What is a database?",en:["An organized collection of data used to model an organization, activity or process.","Key ideas: organized data + defined purpose + model of real-world activity.","Flow: real-world activity → data collection → organization → storage → information use."],ar:"قاعدة البيانات = بيانات منظمة لغرض محدد وتمثل نشاط حقيقي."},
+{l:1,t:"Operational vs. analytical databases ⭐",en:["Operational: OLTP, daily transactions, data is dynamic (changes often). Examples: retail, hospitals, manufacturing. Question: What is happening now?","Analytical: OLAP, historical analysis, data is static or rarely changed. Used for trends, statistics, projections. Question: What happened over time?","Analytical databases often draw data from operational sources. This course focuses on operational databases."],ar:"التشغيلية (OLTP) للمعاملات اليومية وبياناتها تتغير. التحليلية (OLAP) للتاريخ والقرارات وبياناتها ثابتة تقريباً. مثال: تسجيل الطلاب اليوم = تشغيلية."},
+{l:1,t:"The relational model: history",en:["Conceived in 1969; Dr. Edgar F. Codd presented the relational model in 1970.","Based on set theory and first-order predicate logic.","Solved redundancy, weak integrity and dependence on physical storage.","The term relation comes from set theory, not just from tables being related."],ar:"كود (Codd) هو صاحب النموذج العلائقي سنة 1970. كلمة relation جاية من نظرية المجموعات مو من ربط الجداول."},
+{l:1,t:"Table, record, field + characteristics of a relation",en:["Relation = Table. Tuple = Record (row). Attribute = Field (column).","Records are identified by a field with a unique value.","Order of records and order of fields is NOT important.","Users do not need to know where a record is physically stored.","These support logical independence."],ar:"ترتيب الصفوف والأعمدة ما يهم، وكل سجل له قيمة فريدة تعرّفه."},
+{l:1,t:"Relationships: PK → FK",en:["Relationships connect tables through matching values in a shared field.","Primary Key (in the parent table) → Foreign Key (in the child table) creates the logical connection.","Example: CUSTOMERS (PK CustomerID) 1:N ORDERS (FK CustomerID): one customer can place many orders.","Three types: 1:1, 1:N, M:N."],ar:"المفتاح الرئيسي في الجدول الأول والمفتاح الأجنبي في الثاني. العميل الواحد له طلبات كثيرة = 1:N."},
+{l:1,t:"Advantages of relational databases, RDBMS & SQL",en:["Advantages: built-in multilevel integrity; logical and physical data independence; consistency and accuracy; easy retrieval from one or related tables.","Early relational software seemed slow because of limited technology (not the model); hardware and software then improved.","RDBMS = software to create, maintain, manipulate and retrieve relational data and support user applications.","SQL is used to retrieve and work with relational data.","Examples: IBM DB2, Microsoft Access, SQL Server, MySQL, Oracle, PostgreSQL, SQLite."],ar:"RDBMS هو البرنامج اللي ندير فيه القاعدة، وSQL هي اللغة اللي نسأل فيها."},
 {l:2,t:"Big idea: design before building",en:["Good design starts BEFORE tables are created in the RDBMS.","Logical design (blueprint) → Physical implementation (building).","Database design = defining a structure that supports the organization’s information and operational needs."],ar:"التصميم المنطقي (الخريطة) يجي قبل التنفيذ الفعلي في البرنامج. لا تبني قبل ما ترسم."},
 {l:2,t:"Consequences of improper design (4)",en:["1. Difficult information retrieval","2. Inaccurate results","3. Redundant data (same fact stored repeatedly)","4. Data anomalies (insert, update, delete problems)"],ar:"التصميم الضعيف = صعوبة جلب المعلومات + نتائج غلط + تكرار بيانات + مشاكل عند الإضافة والتعديل والحذف."},
 {l:2,t:"Anomalies (STUDENT_COURSE example)",en:["Update anomaly: changing an instructor means editing many rows.","Insert anomaly: hard to add a course before anyone enrolls.","Delete anomaly: deleting the last enrollment may lose the course data.","Fix: separate tables STUDENTS, COURSES, ENROLLMENTS."],ar:"لما نخلط الطالب والمادة والدكتور في جدول واحد تتكرر الأسماء. الحل: نفصلهم في 3 جداول."},
@@ -64,6 +70,11 @@ const NOTES=[
 {l:2,t:"Traditional vs. book’s method",en:["Traditional: Requirements analysis → Data modeling → Normalization.","Book’s sequence: Tables → Fields → Keys → Relationships → Rules → Views → Integrity.","Normalization is used to validate and refine table structures."],ar:"الطريقة التقليدية 3 خطوات، وطريقة الكتاب 7 خطوات. التطبيع (Normalization) نستخدمه نتأكد ونحسّن الجداول."},
 {l:2,t:"Benefits of good design",en:["Structure is easy to modify and maintain","Data is easy to modify (integrity controls)","Information is easy to retrieve","Applications are easy to develop and build","Result: lower maintenance risk, trustworthy data, longer database life."],ar:"فوائد: سهولة التعديل، سهولة جلب المعلومات، بيانات موثوقة، وعمر أطول للقاعدة."},
 
+{l:3,t:"Value-related terms: data, information, Null ⭐",en:["Data: the values you store (e.g. StudentID 202601, Credits 72). Static until modified.","Information: data processed so it is meaningful and useful (individual sales → monthly total).","Null: a missing or unknown value. It is NOT zero and NOT blank text.","0 = known number; empty text = known empty value; NULL = no usable value.","Problems with Null: complicates comparisons and calculations, unclear meaning, and too many Nulls signal a weak table."],ar:"البيانات = قيم مخزنة. المعلومات = بيانات معالجة ومفيدة. Null = قيمة ناقصة أو مجهولة، مو صفر ومو فراغ."},
+{l:3,t:"Structure-related terms: table, field, record, view",en:["Table: data stored in relations, perceived by users as tables.","Field = column/attribute. Record = row/tuple.","View: a virtual table made of fields from one or more base tables; it does not need to store a separate copy of the data."],ar:"الـ View جدول افتراضي مبني من جداول أساسية (base tables) ولا يخزّن نسخة جديدة."},
+{l:3,t:"Keys & index ⭐",en:["Key: a field or set of fields that identifies records or establishes relationships.","Primary key: uniquely identifies each record.","Candidate key: qualifies to be the primary key.","Alternate key: a candidate key NOT chosen as primary.","Foreign key: references a primary key in another table.","Index: a structure the RDBMS provides to improve data processing and retrieval. Do not confuse it with a key."],ar:"المفتاح يعرّف السجل ويربط الجداول، أما الفهرس (Index) فيسرّع البحث فقط. المرشح اللي ما انختار = بديل (Alternate)."},
+{l:3,t:"Relationship-related terms",en:["Relationship: records of one table can be associated with records of another.","Types: 1:1, 1:N, M:N.","Type of participation: mandatory or optional.","Degree of participation: minimum and maximum number of related records (e.g. 0..1, 1..1, 0..M, 1..M).","These come from organizational requirements, not guesses."],ar:"النوع (1:1 / 1:N / M:N)، ونوع المشاركة (إجباري أو اختياري)، ودرجة المشاركة (الحد الأدنى والأعلى)."},
+{l:3,t:"Integrity-related terms ⭐",en:["Field specification: a complete definition of a field and the values it can hold: identity (name, purpose), physical (data type, length, format), logical (required value, range, defaults, rules).","Field specifications establish field-level integrity.","Data integrity: the validity, consistency and accuracy of the data. Design it in from the start.","Four types: field-level, table-level, relationship-level, business rules."],ar:"مواصفات الحقل = تعريف كامل للحقل (هوية، فيزيائي، منطقي). سلامة البيانات = صحة وتناسق ودقة، وتنقسم لأربعة أنواع."},
 {l:4,t:"THE 7 PHASES ⭐ (memorize the order)",en:["1 Mission → 2 Analyze → 3 Structures → 4 Relationships → 5 Rules → 6 Views → 7 Integrity","Each phase builds on decisions from the previous phase.","Methodology works for: a NEW database, REFINING an existing one, or ANALYZING before REDESIGN."],ar:"سبع مراحل مرتبة، كل مرحلة تبني على اللي قبلها. تنفع للجديدة وللقديمة وقبل إعادة التصميم. (شوفي حيلة الحفظ تحت)",mn:1},
 {l:4,t:"Why complete the entire process?",en:["Follow it from beginning to end, whatever the database type, size or purpose.","More thorough = lower risk of inconsistent data and inaccurate information.","Key principle: an incomplete design is a poor design. No shortcuts, even if it looks simple."],ar:"لازم تكملين كل المراحل حتى لو القاعدة بسيطة. نص تصميم = تصميم ضعيف."},
 {l:4,t:"Phase 1: Mission statement & objectives",en:["Mission statement: establishes the PURPOSE of the database and gives a focus. Team: developer + database owner + management.","Mission objectives: general TASKS users can perform on the data. Team: developer + management + end users.","Example: mission = maintain accurate student registration data. Objectives = track students/courses, record registrations, produce class lists."],ar:"البيان (Statement) = ليش القاعدة موجودة. الأهداف (Objectives) = إيش المستخدم يسوي فيها. الفرق بالفريق: الأهداف فيها المستخدمين."},
@@ -76,6 +87,16 @@ const NOTES=[
 {l:4,t:"Notes for designers",en:["No shortcuts: partial design is almost as risky as none.","People matter: users and management repeatedly give requirements.","Logical first: finish logical design before the RDBMS.","Iterative: the process is never truly finished; it evolves with the organization."],ar:"لا اختصارات، الناس مهمين، المنطقي أول، والتصميم يتطور دايم."}
 ];
 const CARDS=[
+[1,"What is a database?","An organized collection of data used to model an organization, activity or process.","بيانات منظمة لغرض محدد"],
+[1,"Operational database: key facts","Supports OLTP, daily transactions, dynamic data (retail, hospitals, manufacturing).","تشغيلية: معاملات يومية، بيانات تتغير"],
+[1,"Analytical database: key facts","Supports OLAP, historical analysis, static data; used for trends, statistics and projections.","تحليلية: تاريخ وقرارات"],
+[1,"Who presented the relational model and when?","Dr. Edgar F. Codd, 1970 (conceived in 1969).","كود 1970"],
+[1,"Relational model is based on…","Set theory and first-order predicate logic.","المجموعات + المنطق"],
+[1,"Relation / tuple / attribute","Table / record (row) / field (column).","جدول / سجل / حقل"],
+[1,"Is the order of records or fields important in a relation?","No. Records are identified by a unique-value field; users need not know physical location (logical independence).","الترتيب ما يهم"],
+[1,"How are tables related?","Through matching values in a shared field: primary key → foreign key.","PK ← FK"],
+[1,"Advantages of relational databases","Multilevel integrity, logical and physical independence, consistency and accuracy, easy retrieval.","سلامة، استقلالية، دقة، سهولة استرجاع"],
+[1,"What is an RDBMS? What is SQL?","RDBMS: software to create and manage relational databases. SQL: language to retrieve and work with the data.","البرنامج / اللغة"],
 [2,"Why must logical design come before physical implementation?","It is the blueprint for an accurate, maintainable database.","الخريطة قبل البناء"],
 [2,"4 consequences of improper design","Difficult retrieval, inaccurate results, redundant data, data anomalies.","صعوبة جلب، نتائج غلط، تكرار، شذوذ"],
 [2,"3 anomalies","Insert, update and delete anomalies.","إضافة، تعديل، حذف"],
@@ -89,6 +110,18 @@ const CARDS=[
 [2,"Future growth means…","Reasonable adaptability, not predicting every possible future requirement.","مرونة معقولة، مو توقع كل شي"],
 [2,"Traditional design method","Requirements analysis → Data modeling → Normalization.","3 خطوات"],
 [2,"Role of normalization","Validating and refining table structures.","نتأكد ونحسّن الجداول"],
+[3,"Data vs. information","Data = stored values. Information = data processed into a meaningful, useful form.","قيم مخزنة / قيم معالجة ومفيدة"],
+[3,"What does Null represent?","A missing or unknown value. Not zero and not blank text.","مجهول، مو صفر"],
+[3,"Problems with Null","Complicates comparisons and calculations, ambiguous meaning, too many Nulls signal weak structure.","يعقّد المقارنات والحسابات"],
+[3,"What is a view?","A virtual table made of fields from one or more base tables; no separate copy of data.","جدول افتراضي"],
+[3,"Primary vs. candidate vs. alternate key","Primary: uniquely identifies records. Candidate: qualifies to be primary. Alternate: candidate not chosen.","رئيسي / مرشح / بديل"],
+[3,"Foreign key","A field that references a primary key in another table.","يشير لمفتاح رئيسي بجدول ثاني"],
+[3,"Key vs. index","Key identifies records/supports relationships; index improves retrieval performance.","المفتاح يعرّف، الفهرس يسرّع"],
+[3,"Three basic relationship types","1:1, 1:N, M:N.","ثلاثة أنواع"],
+[3,"Type vs. degree of participation","Type: mandatory or optional. Degree: minimum and maximum number of related records.","إجباري/اختياري، وحد أدنى/أعلى"],
+[3,"Field specification","Complete definition of a field and its allowed values (identity, physical, logical). Supports field-level integrity.","تعريف كامل للحقل"],
+[3,"Data integrity","The validity, consistency and accuracy of data; designed in, not an afterthought.","صحة وتناسق ودقة"],
+[3,"Four types of data integrity","Field-level, table-level, relationship-level, business rules.","حقل، جدول، علاقة، قواعد"],
 [4,"The 7 phases in order","Mission, Analyze, Structures, Relationships, Rules, Views, Integrity.","احفظيها بالحيلة تحت"],
 [4,"Mission statement","Establishes the purpose of the database and gives a focus to design work.","ليش القاعدة موجودة"],
 [4,"Mission objectives","General tasks users can perform against the data.","إيش يسوون المستخدمين"],
@@ -103,6 +136,12 @@ const CARDS=[
 [4,"Why is the process iterative?","It is never truly finished; structures and rules evolve with the organization.","التصميم يتطور"]
 ];
 const Q=[
+[1,"Which database supports OLTP and daily changing data?",["Analytical","Operational","Historical archive","Static"],1,"التشغيلية = OLTP وبيانات ديناميكية."],
+[1,"A university database updated all day with current registrations is…",["Analytical (OLAP)","Operational (OLTP)","Neither","A view"],1,"تحديث طول اليوم = تشغيلية OLTP."],
+[1,"Who formally presented the relational model in 1970?",["Michael Hernandez","Edgar F. Codd","Bill Gates","Larry Ellison"],1,"Dr. Edgar F. Codd."],
+[1,"In a relation, a record is also called a…",["Attribute","Tuple","Key","View"],1,"Tuple = record. Attribute = field."],
+[1,"Which is true for a relation?",["Record order matters","Field order matters","Order of records and fields is not important","Users must know the physical location"],2,"الترتيب ما يهم، وهذا يدعم الاستقلالية المنطقية."],
+[1,"CUSTOMERS to ORDERS (one customer, many orders) is…",["1:1","1:N","M:N","N:1 only"],1,"عميل واحد وطلبات كثيرة = 1:N."],
 [2,"Which is NOT a consequence of improper design?",["Redundant data","Data anomalies","Faster queries","Inaccurate results"],2,"النتائج السلبية: تكرار، شذوذ، نتائج غلط. أما الاستعلامات الأسرع فهذي ميزة التصميم الجيد."],
 [2,"Deleting the last enrollment loses the course data. This is a…",["Insert anomaly","Update anomaly","Delete anomaly","Normal behavior"],2,"فقدان بيانات المادة عند الحذف = Delete anomaly."],
 [2,"The relational model is founded on…",["Graph theory","Set theory and predicate logic","Object theory","Network protocols"],1,"Set theory + first-order predicate logic."],
@@ -112,6 +151,14 @@ const Q=[
 [2,"Each table should represent…",["Many subjects","One subject","One field","One user"],1,"Single subject per table."],
 [2,"Traditional method sequence?",["Normalization → Modeling → Requirements","Requirements → Modeling → Normalization","Tables → Fields → Keys","Views → Rules → Integrity"],1,"Requirements analysis → Data modeling → Normalization."],
 [2,"Future growth means…",["Predicting every future need","Reasonable adaptability","Never changing the design","Adding extra tables"],1,"مرونة معقولة وليس توقع كل شي."],
+[3,"Data processed into a meaningful form is called…",["Data","Information","Null","An index"],1,"Information."],
+[3,"Null represents…",["Zero","A blank space","A missing or unknown value","An empty table"],2,"Null مو صفر ومو فراغ."],
+[3,"A “virtual” table made from fields of base tables is a…",["Index","View","Record","Key"],1,"View."],
+[3,"A candidate key NOT chosen as the primary key is a(n)…",["Foreign key","Alternate key","Index","Composite view"],1,"Alternate key."],
+[3,"Which structure mainly improves retrieval performance?",["Primary key","Foreign key","Index","Null"],2,"الفهرس Index لتحسين الأداء، المفتاح للتعريف."],
+[3,"“Mandatory or optional” describes…",["Degree of participation","Type of participation","Field specification","Key type"],1,"Type of participation. أما Degree فهي min/max."],
+[3,"Field specifications establish which integrity?",["Table-level","Field-level","Relationship-level","None"],1,"Field-level integrity."],
+[3,"How many types of data integrity are there?",["2","3","4","7"],2,"أربعة: field, table, relationship, business rules."],
 [4,"What is the 3rd phase of the design process?",["Analyze","Structures","Relationships","Views"],1,"1 Mission, 2 Analyze, 3 Structures."],
 [4,"Which phase is the LAST before implementation?",["Views","Rules","Integrity","Relationships"],2,"Phase 7: Reviewing data integrity."],
 [4,"Mission objectives are…",["The purpose of the database","General tasks users can perform on the data","A list of tables","Validation tables"],1,"Statement = الغرض. Objectives = المهام."],
