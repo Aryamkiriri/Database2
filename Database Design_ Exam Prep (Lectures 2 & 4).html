@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Database Design – Exam Prep (Lectures 2 & 4)</title>
+<style>
+:root{--bg:#f6faf9;--card:#fff;--ink:#17302d;--mut:#5b7370;--pri:#0f6b66;--pri2:#d9efec;--acc:#b8860b;--ok:#1b8a4b;--bad:#c0392b;--line:#cfe0dd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d1c;--card:#162927;--card:#172b29;--ink:#e3f1ef;--mut:#9bb5b1;--pri:#4fc3ba;--pri2:#1f3b38;--acc:#e0b84c;--ok:#4cc27f;--bad:#ff7b6b;--line:#2a4744}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:1.35rem;margin:6px 0 2px}
+.sub{color:var(--mut);margin:0 0 14px;font-size:.92rem}
+.ar{direction:rtl;text-align:right;color:var(--mut);font-size:.95rem;line-height:1.7}
+.tabs,.seg{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:10px}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.tabs button{flex:1;min-width:90px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}
+details.card{padding:0}
+summary{padding:13px 16px;font-weight:600;cursor:pointer}
+details[open] summary{border-bottom:1px solid var(--line)}
+.b{padding:10px 16px 14px}
+.b ul{margin:0 0 8px;padding-left:20px}
+.hero{border-left:6px solid var(--pri);background:var(--pri2)}
+.seven{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.seven span{background:var(--pri);color:#fff;padding:6px 10px;border-radius:8px;font-weight:600;font-size:.9rem}
+.fc{min-height:210px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font-size:1.15rem;cursor:pointer;border:2px solid var(--pri);transition:background .2s}
+.fc.back{background:var(--pri2)}
+.fc small{color:var(--mut);margin-top:10px}
+.row{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.opt{display:block;width:100%;text-align:left;margin:7px 0}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--card))}
+.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,var(--card))}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri);width:0;transition:width .25s}
+.tag{font-size:.78rem;color:var(--mut)}
+.big{font-size:2.2rem;font-weight:700;color:var(--pri)}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><div class="w">
+<h1>Database Design: Exam Prep</h1>
+<p class="sub">Lecture 2 (Design Objectives) + Lecture 4 (Conceptual Overview)</p>
+<div class="tabs" role="tablist">
+<button class="on" data-t="notes">Notes</button><button data-t="cards">Flashcards</button><button data-t="quiz">Quiz</button>
+</div>
+<div class="seg" id="lecSeg">
+<button class="on" data-l="all">Both</button><button data-l="2">Lecture 2</button><button data-l="4">Lecture 4</button>
+</div>
+
+<section id="notes"></section>
+<section id="cards" hidden></section>
+<section id="quiz" hidden></section>
+</div>
+<script>
+const NOTES=[
+{l:2,t:"Big idea: design before building",en:["Good design starts BEFORE tables are created in the RDBMS.","Logical design (blueprint) → Physical implementation (building).","Database design = defining a structure that supports the organization’s information and operational needs."],ar:"التصميم المنطقي (الخريطة) يجي قبل التنفيذ الفعلي في البرنامج. لا تبني قبل ما ترسم."},
+{l:2,t:"Consequences of improper design (4)",en:["1. Difficult information retrieval","2. Inaccurate results","3. Redundant data (same fact stored repeatedly)","4. Data anomalies (insert, update, delete problems)"],ar:"التصميم الضعيف = صعوبة جلب المعلومات + نتائج غلط + تكرار بيانات + مشاكل عند الإضافة والتعديل والحذف."},
+{l:2,t:"Anomalies (STUDENT_COURSE example)",en:["Update anomaly: changing an instructor means editing many rows.","Insert anomaly: hard to add a course before anyone enrolls.","Delete anomaly: deleting the last enrollment may lose the course data.","Fix: separate tables STUDENTS, COURSES, ENROLLMENTS."],ar:"لما نخلط الطالب والمادة والدكتور في جدول واحد تتكرر الأسماء. الحل: نفصلهم في 3 جداول."},
+{l:2,t:"Theory behind the relational model",en:["Relational model = founded on mathematical theory.","Set theory: organizing and operating on relations.","First-order predicate logic: logical interpretation and retrieval of data.","Theory stays valid regardless of the RDBMS product."],ar:"النظرية: نظرية المجموعات + المنطق الرياضي. تنفع مع أي برنامج قاعدة بيانات."},
+{l:2,t:"Why learn a design methodology (5)",en:["Organized step-by-step process","Informed design decisions","Reduces rework and errors","Saves time and effort (no trial-and-error)","Improves use of RDBMS tools","It prevents: redundant, duplicate, and inconsistent data."],ar:"المنهجية تخليك منظم، تقلل الأخطاء، توفر وقت، وتمنع التكرار والتناقض."},
+{l:2,t:"THE 5 OBJECTIVES of good design ⭐",en:["1. Information retrieval: supports required info (known at requirements gathering) AND ad hoc info (unexpected requests after implementation).","2. Proper tables: single subject, distinct fields, minimal redundancy, clear identification (key).","3. Data integrity: field-level, table-level, relationship-level, business rules.","4. Business rules: statements that define or constrain the organization’s operations (e.g. max credit hours).","5. Future growth: reasonable adaptability, not predicting everything."],ar:"أهم نقطة بالمحاضرة! الخمسة: جلب المعلومات، جداول صحيحة، سلامة البيانات، قواعد العمل، النمو المستقبلي."},
+{l:2,t:"Ideal table & 4 types of integrity",en:["Ideal table = one subject + well-defined fields + appropriate key + minimal duplication.","Field-level: validity of individual field values.","Table-level: records identified properly (keys).","Relationship-level: valid links between tables.","Business rules: organization-specific restrictions."],ar:"الجدول المثالي: موضوع واحد، حقول واضحة، مفتاح، وبدون تكرار. أنواع السلامة 4: حقل، جدول، علاقة، قواعد عمل."},
+{l:2,t:"Traditional vs. book’s method",en:["Traditional: Requirements analysis → Data modeling → Normalization.","Book’s sequence: Tables → Fields → Keys → Relationships → Rules → Views → Integrity.","Normalization is used to validate and refine table structures."],ar:"الطريقة التقليدية 3 خطوات، وطريقة الكتاب 7 خطوات. التطبيع (Normalization) نستخدمه نتأكد ونحسّن الجداول."},
+{l:2,t:"Benefits of good design",en:["Structure is easy to modify and maintain","Data is easy to modify (integrity controls)","Information is easy to retrieve","Applications are easy to develop and build","Result: lower maintenance risk, trustworthy data, longer database life."],ar:"فوائد: سهولة التعديل، سهولة جلب المعلومات، بيانات موثوقة، وعمر أطول للقاعدة."},
+
+{l:4,t:"THE 7 PHASES ⭐ (memorize the order)",en:["1 Mission → 2 Analyze → 3 Structures → 4 Relationships → 5 Rules → 6 Views → 7 Integrity","Each phase builds on decisions from the previous phase.","Methodology works for: a NEW database, REFINING an existing one, or ANALYZING before REDESIGN."],ar:"سبع مراحل مرتبة، كل مرحلة تبني على اللي قبلها. تنفع للجديدة وللقديمة وقبل إعادة التصميم. (شوفي حيلة الحفظ تحت)",mn:1},
+{l:4,t:"Why complete the entire process?",en:["Follow it from beginning to end, whatever the database type, size or purpose.","More thorough = lower risk of inconsistent data and inaccurate information.","Key principle: an incomplete design is a poor design. No shortcuts, even if it looks simple."],ar:"لازم تكملين كل المراحل حتى لو القاعدة بسيطة. نص تصميم = تصميم ضعيف."},
+{l:4,t:"Phase 1: Mission statement & objectives",en:["Mission statement: establishes the PURPOSE of the database and gives a focus. Team: developer + database owner + management.","Mission objectives: general TASKS users can perform on the data. Team: developer + management + end users.","Example: mission = maintain accurate student registration data. Objectives = track students/courses, record registrations, produce class lists."],ar:"البيان (Statement) = ليش القاعدة موجودة. الأهداف (Objectives) = إيش المستخدم يسوي فيها. الفرق بالفريق: الأهداف فيها المستخدمين."},
+{l:4,t:"Phase 2: Analyzing the current database",en:["Sources: existing (legacy or paper) database; collection & presentation of data (forms, reports, applications, web); interviews with users and management.","Output: initial field list → remove calculated fields → refined list of fundamental data requirements."],ar:"نحلل الوضع الحالي: قاعدة قديمة، نماذج وتقارير، ومقابلات. الناتج: قائمة حقول بدون الحقول المحسوبة."},
+{l:4,t:"Phase 3: Creating the data structures",en:["Tables: identify subjects from objectives and requirements.","Fields: associate fields; remove multipart / multivalued / misplaced fields.","Keys: choose a primary key for each table.","Field specifications: define data type, length, required value, Null, etc.","Quality check: each table = one subject; fields = distinct characteristics."],ar:"جداول ← حقول ← مفاتيح ← مواصفات الحقول. كل جدول موضوع واحد."},
+{l:4,t:"Phase 4: Table relationships",en:["1 Identify logical relationships (with users/management)","2 Establish: connect tables with primary/foreign keys or a linking table","3 Characterize: set the type and degree of participation","4 Protect: relationship-level integrity","Example: STUDENTS (StudentID PK) → ENROLLMENTS (StudentID FK)."],ar:"حدد، اربط (PK/FK أو جدول وسيط)، وصّف النوع والمشاركة، واحمِ العلاقة."},
+{l:4,t:"Phase 5: Business rules",en:["Business rules = limitations and requirements on data, structures or relationships, based on how the organization uses its data.","User-level example: Ship Date must be later than Order Date.","Management example: an agent can represent no more than 20 entertainers.","Validation tables: when a field has a finite set/range of allowed values."],ar:"قواعد العمل = قيود حسب سياسة المؤسسة. جداول التحقق نستخدمها لما القيم المسموحة محدودة."},
+{l:4,t:"Phase 6: Views",en:["Identify needs (interview users and management).","Define the view: choose tables and fields.","Set criteria to limit the records returned (e.g. State = Texas).","Detailed view: operational users, daily work.","Summary view: management, strategic decisions."],ar:"الـ View هو عرض مخصص من الجداول. تفصيلي للموظفين، ملخص للإدارة."},
+{l:4,t:"Phase 7: Reviewing data integrity",en:["Four areas checked: table-level, field-level, relationship-level, business rules.","Then the logical design is complete and ready for RDBMS implementation."],ar:"المراجعة الأخيرة 4 مجالات: الجدول، الحقل، العلاقة، قواعد العمل. بعدها ننفذ في البرنامج."},
+{l:4,t:"Notes for designers",en:["No shortcuts: partial design is almost as risky as none.","People matter: users and management repeatedly give requirements.","Logical first: finish logical design before the RDBMS.","Iterative: the process is never truly finished; it evolves with the organization."],ar:"لا اختصارات، الناس مهمين، المنطقي أول، والتصميم يتطور دايم."}
+];
+const CARDS=[
+[2,"Why must logical design come before physical implementation?","It is the blueprint for an accurate, maintainable database.","الخريطة قبل البناء"],
+[2,"4 consequences of improper design","Difficult retrieval, inaccurate results, redundant data, data anomalies.","صعوبة جلب، نتائج غلط، تكرار، شذوذ"],
+[2,"3 anomalies","Insert, update and delete anomalies.","إضافة، تعديل، حذف"],
+[2,"Theory behind the relational model","Set theory and first-order predicate logic.","نظرية المجموعات + المنطق"],
+[2,"The 5 objectives of good design","Information retrieval, proper tables, data integrity, business rules, future growth.","جلب، جداول، سلامة، قواعد، نمو"],
+[2,"Ad hoc information","Information users request unexpectedly after implementation.","طلبات غير متوقعة بعد التنفيذ"],
+[2,"Required information","Information identified as necessary during requirements gathering.","معروفة من البداية"],
+[2,"4 types of data integrity","Field-level, table-level, relationship-level, business rules.","حقل، جدول، علاقة، قواعد"],
+[2,"Ideal table","One subject + well-defined fields + appropriate key + minimal duplication.","موضوع + حقول + مفتاح + بلا تكرار"],
+[2,"Business rule","A statement that defines or constrains some aspect of the organization’s operations.","قيد من سياسة المؤسسة"],
+[2,"Future growth means…","Reasonable adaptability, not predicting every possible future requirement.","مرونة معقولة، مو توقع كل شي"],
+[2,"Traditional design method","Requirements analysis → Data modeling → Normalization.","3 خطوات"],
+[2,"Role of normalization","Validating and refining table structures.","نتأكد ونحسّن الجداول"],
+[4,"The 7 phases in order","Mission, Analyze, Structures, Relationships, Rules, Views, Integrity.","احفظيها بالحيلة تحت"],
+[4,"Mission statement","Establishes the purpose of the database and gives a focus to design work.","ليش القاعدة موجودة"],
+[4,"Mission objectives","General tasks users can perform against the data.","إيش يسوون المستخدمين"],
+[4,"Who writes the mission statement / objectives?","Statement: developer + database owner + management. Objectives: developer + management + end users.","الأهداف فيها المستخدمين"],
+[4,"Phase 2 output","Initial field list → remove calculated fields → refined list of fundamental data requirements.","احذف الحقول المحسوبة"],
+[4,"Phase 3 steps","Tables, fields, keys, field specifications.","جداول، حقول، مفاتيح، مواصفات"],
+[4,"Phase 4 four steps","Identify, Establish, Characterize, Protect.","حدد، اربط، وصّف، احمِ"],
+[4,"What are validation tables for?","Fields with a finite set or range of allowed values.","قيم مسموحة محدودة"],
+[4,"Detailed view vs. summary view","Detailed: operational users’ daily work. Summary: management’s strategic decisions.","تفصيلي للموظف، ملخص للمدير"],
+[4,"4 areas of the final integrity review","Table-level, field-level, relationship-level, business rules.","نفس أنواع السلامة"],
+[4,"When is the logical design ready for an RDBMS?","After the complete logical design has been reviewed.","بعد المراجعة الكاملة"],
+[4,"Why is the process iterative?","It is never truly finished; structures and rules evolve with the organization.","التصميم يتطور"]
+];
+const Q=[
+[2,"Which is NOT a consequence of improper design?",["Redundant data","Data anomalies","Faster queries","Inaccurate results"],2,"النتائج السلبية: تكرار، شذوذ، نتائج غلط. أما الاستعلامات الأسرع فهذي ميزة التصميم الجيد."],
+[2,"Deleting the last enrollment loses the course data. This is a…",["Insert anomaly","Update anomaly","Delete anomaly","Normal behavior"],2,"فقدان بيانات المادة عند الحذف = Delete anomaly."],
+[2,"The relational model is founded on…",["Graph theory","Set theory and predicate logic","Object theory","Network protocols"],1,"Set theory + first-order predicate logic."],
+[2,"Information users request unexpectedly after implementation is…",["Required information","Ad hoc information","Validation data","Summary data"],1,"Ad hoc = غير متوقعة بعد التنفيذ."],
+[2,"How many objectives of good design does the lecture list?",["3","4","5","7"],2,"خمسة أهداف. (السبعة هي مراحل المحاضرة 4!)"],
+[2,"Which is NOT one of the four types of data integrity?",["Field-level","Table-level","Future-level","Relationship-level"],2,"الأنواع: field, table, relationship, business rules."],
+[2,"Each table should represent…",["Many subjects","One subject","One field","One user"],1,"Single subject per table."],
+[2,"Traditional method sequence?",["Normalization → Modeling → Requirements","Requirements → Modeling → Normalization","Tables → Fields → Keys","Views → Rules → Integrity"],1,"Requirements analysis → Data modeling → Normalization."],
+[2,"Future growth means…",["Predicting every future need","Reasonable adaptability","Never changing the design","Adding extra tables"],1,"مرونة معقولة وليس توقع كل شي."],
+[4,"What is the 3rd phase of the design process?",["Analyze","Structures","Relationships","Views"],1,"1 Mission, 2 Analyze, 3 Structures."],
+[4,"Which phase is the LAST before implementation?",["Views","Rules","Integrity","Relationships"],2,"Phase 7: Reviewing data integrity."],
+[4,"Mission objectives are…",["The purpose of the database","General tasks users can perform on the data","A list of tables","Validation tables"],1,"Statement = الغرض. Objectives = المهام."],
+[4,"Who helps define mission OBJECTIVES?",["Developer, management and end users","Developer only","Database owner only","Auditors"],0,"فريق الأهداف يضم المستخدمين النهائيين."],
+[4,"In Phase 2, which fields are removed to get the refined list?",["Primary keys","Calculated fields","Text fields","Date fields"],1,"نحذف الحقول المحسوبة (Calculated fields)."],
+[4,"“Ship Date must be later than Order Date” is a…",["View","Business rule","Mission statement","Primary key"],1,"قاعدة عمل (Business rule)."],
+[4,"Validation tables are used when a field has…",["Unlimited free text","A finite set or range of allowed values","No key","Calculated values"],1,"قيم مسموحة محدودة."],
+[4,"Which view type serves management’s strategic decisions?",["Detailed view","Summary view","Linking view","Raw table"],1,"Summary view للإدارة."],
+[4,"Which is NOT checked in the final integrity review?",["Table-level","Field-level","Mission-level","Business rules"],2,"المراجعة: table, field, relationship, business rules."]
+];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let lec="all",tab="notes";
+const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const flt=a=>a.filter(x=>lec=="all"||(x.l||x[0])==lec);
+
+function notes(){
+ $("#notes").innerHTML=flt(NOTES).map(n=>`<details class="card"${n.mn?" open":""}><summary>L${n.l} · ${esc(n.t)}</summary><div class="b"><ul>${n.en.map(e=>`<li>${esc(e)}</li>`).join("")}</ul><div class="ar">${esc(n.ar)}</div>${n.mn?`<div class="card hero"><b>Memory trick:</b> <b>M</b>y <b>A</b>unt <b>S</b>ells <b>R</b>ice, <b>R</b>ed <b>V</b>egetables, <b>I</b>ce<br><span class="tag">Mission · Analyze · Structures · Relationships · Rules · Views · Integrity</span><div class="ar">عمتي تبيع رز وخضار وثلج: أول حرف من كل كلمة هو أول حرف من المرحلة.</div></div>`:""}</div></details>`).join("");
+}
+let ci=0,deck=[],flip=false;
+function cards(reset){
+ if(reset){deck=sh(flt(CARDS));ci=0;flip=false}
+ const c=deck[ci];
+ $("#cards").innerHTML=`<div class="row"><span class="tag">${ci+1} / ${deck.length}</span><button id="shuf">Shuffle</button></div><div class="bar"><i style="width:${(ci+1)/deck.length*100}%"></i></div>
+ <div class="card fc ${flip?"back":""}" id="fc" tabindex="0" role="button" aria-label="Flip card">${flip?`<div>${esc(c[2])}</div><div class="ar" style="margin-top:10px">${esc(c[3])}</div>`:`<div>${esc(c[1])}</div>`}<small>${flip?"Tap to see the question":"Tap to flip (try answering first!)"} · Lecture ${c[0]}</small></div>
+ <div class="row"><button id="pv">← Previous</button><button id="nx">Next →</button></div>`;
+ const f=()=>{flip=!flip;cards()};
+ $("#fc").onclick=f;$("#fc").onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();f()}};
+ $("#pv").onclick=()=>{ci=(ci-1+deck.length)%deck.length;flip=false;cards()};
+ $("#nx").onclick=()=>{ci=(ci+1)%deck.length;flip=false;cards()};
+ $("#shuf").onclick=()=>cards(true);
+}
+let qs=[],qi=0,sc=0,ans=false;
+function quiz(reset){
+ if(reset){qs=sh(flt(Q));qi=0;sc=0;ans=false}
+ const el=$("#quiz");
+ if(qi>=qs.length){const p=Math.round(sc/qs.length*100);
+  el.innerHTML=`<div class="card" style="text-align:center"><div class="big">${sc} / ${qs.length}</div><p>${p>=80?"Excellent! You are ready.":p>=50?"Good. Review the notes you missed, then retry.":"Go through the Notes and Flashcards again, then retry."}</p><div class="ar" style="text-align:center">${p>=80?"ممتاز! جاهزة بإذن الله":"راجعي الملاحظات وأعيدي المحاولة، تقدرين!"}</div><button class="on" id="rs">Try again</button></div>`;
+  $("#rs").onclick=()=>quiz(true);return}
+ const q=qs[qi];
+ el.innerHTML=`<div class="row"><span class="tag">Question ${qi+1} / ${qs.length} · Lecture ${q[0]}</span><span class="tag">Score: ${sc}</span></div><div class="bar"><i style="width:${qi/qs.length*100}%"></i></div>
+ <div class="card"><b>${esc(q[1])}</b>${q[2].map((o,i)=>`<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}<div id="fb" class="ar" hidden></div></div><div class="row"><span></span><button id="nq" hidden class="on">${qi+1==qs.length?"See score":"Next question"}</button></div>`;
+ ans=false;
+ $$(".opt").forEach(b=>b.onclick=()=>{if(ans)return;ans=true;const i=+b.dataset.i;
+  $$(".opt").forEach((x,k)=>{if(k==q[3])x.classList.add("ok")});
+  if(i==q[3])sc++;else b.classList.add("no");
+  const fb=$("#fb");fb.textContent=(i==q[3]?"صح! ":"غلط. ")+q[4];fb.hidden=false;$("#nq").hidden=false});
+ $("#nq").onclick=()=>{qi++;quiz()};
+}
+function show(){
+ ["notes","cards","quiz"].forEach(t=>$("#"+t).hidden=t!=tab);
+ if(tab=="notes")notes();else if(tab=="cards")cards(true);else quiz(true);
+}
+$$(".tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;$$(".tabs button").forEach(x=>x.classList.toggle("on",x==b));show()});
+$$("#lecSeg button").forEach(b=>b.onclick=()=>{lec=b.dataset.l;$$("#lecSeg button").forEach(x=>x.classList.toggle("on",x==b));show()});
+show();
+</script></body></html>
